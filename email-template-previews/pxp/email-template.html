@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Powered by Prayer</title>
+  <style type="text/css">
+    @keyframes ctaPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+    .cta-anim {
+      animation: ctaPulse 2.2s ease-in-out infinite;
+      transition: all 0.25s ease;
+    }
+    .timer-chip {
+      display: inline-block;
+      min-width: 112px;
+      text-align: center;
+      background: #1f2328;
+      color: #f6d49a;
+      border: 1px solid #3d444d;
+      border-radius: 12px;
+      padding: 7px 10px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.1;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+    }
+    @keyframes liveBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.45; }
+    }
+    .timer-chip.is-live {
+      background: #7a1414;
+      color: #ffffff;
+      border-color: #b82525;
+    }
+    .timer-chip.is-live-blink {
+      animation: liveBlink 0.9s ease-in-out infinite;
+    }
+    @media only screen and (max-width: 640px) {
+      .template-card-cell {
+        display: block !important;
+        width: 100% !important;
+      }
+      .template-card-inner {
+        margin-bottom: 10px !important;
+      }
+    }
+  </style>
+  <script type="text/javascript">
+    (function () {
+      var ATL_TZ = "America/New_York";
+      // QUICK EDIT CONTROLS (edit these values before sending)
+      var EDITABLE = {
+        timezoneLabel: "(EDT)",
+        liveUrl: "https://www.youtube.com/@PoweredXPrayers/live",
+        videoUrl: "https://www.youtube.com/watch?v=7zyTup1sU2U",
+        videoTitle: "IT'S TIME. I AM DOING A NEW THING — STEP OUT OF THE WINEPRESS",
+        videoDateText: "Uploaded on April 21, 2026",
+        liveHour24: 7,     // 7 = 7AM, 19 = 7PM
+        liveMinute: 30,
+        liveBlinkMinutes: 10
+      };
+
+      function getYoutubeVideoId(url) {
+        if (!url) return "";
+        var match = url.match(/[?&]v=([^&]+)/);
+        if (match && match[1]) return match[1];
+        match = url.match(/youtu\.be\/([^?&]+)/);
+        if (match && match[1]) return match[1];
+        return "";
+      }
+
+      function twoDigit(n) {
+        return n < 10 ? "0" + n : "" + n;
+      }
+
+      function formatLiveTimeLabel(hour24, minute) {
+        var ampm = hour24 >= 12 ? "PM" : "AM";
+        var hour12 = hour24 % 12;
+        if (hour12 === 0) hour12 = 12;
+        return hour12 + ":" + twoDigit(minute) + " " + ampm;
+      }
+
+      function formatClock(hour24, minute, second) {
+        var ampm = hour24 >= 12 ? "PM" : "AM";
+        var hour12 = hour24 % 12;
+        if (hour12 === 0) hour12 = 12;
+        return hour12 + ":" + twoDigit(minute) + ":" + twoDigit(second) + " " + ampm;
+      }
+
+      function applyEditableSettings() {
+        var liveBtn = document.getElementById("live-link-button");
+        if (liveBtn && EDITABLE.liveUrl) liveBtn.setAttribute("href", EDITABLE.liveUrl);
+
+        var imageLink = document.getElementById("latest-video-link-image");
+        if (imageLink && EDITABLE.videoUrl) imageLink.setAttribute("href", EDITABLE.videoUrl);
+
+        var titleLink = document.getElementById("latest-video-link-title");
+        if (titleLink && EDITABLE.videoUrl) titleLink.setAttribute("href", EDITABLE.videoUrl);
+
+        var videoTitle = document.getElementById("latest-video-title");
+        if (videoTitle && EDITABLE.videoTitle) videoTitle.textContent = EDITABLE.videoTitle;
+
+        var videoDate = document.getElementById("latest-video-date");
+        if (videoDate && EDITABLE.videoDateText) videoDate.textContent = EDITABLE.videoDateText;
+
+        var thumb = document.getElementById("latest-video-thumb");
+        var videoId = getYoutubeVideoId(EDITABLE.videoUrl);
+        if (thumb && videoId) thumb.setAttribute("src", "https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg");
+
+        var tzLabel = document.getElementById("atl-timezone-label");
+        if (tzLabel && EDITABLE.timezoneLabel) tzLabel.textContent = EDITABLE.timezoneLabel;
+
+        var liveTimeNodes = document.querySelectorAll("[data-live-time-label]");
+        var liveLabel = formatLiveTimeLabel(EDITABLE.liveHour24, EDITABLE.liveMinute);
+        for (var i = 0; i < liveTimeNodes.length; i++) {
+          liveTimeNodes[i].textContent = liveLabel;
+        }
+      }
+
+      function atlantaWeekdayIndex(date) {
+        var shortDay = new Intl.DateTimeFormat("en-US", {
+          timeZone: ATL_TZ,
+          weekday: "short"
+        }).format(date);
+        var map = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+        return map[shortDay];
+      }
+
+      function formatAtlantaTuesday() {
+        var now = new Date();
+        var weekday = atlantaWeekdayIndex(now);
+        var targetOffsetDays = (2 - weekday + 7) % 7; // 2 = Tuesday
+        var targetDate = new Date(now.getTime() + targetOffsetDays * 24 * 60 * 60 * 1000);
+
+        var weekdayText = new Intl.DateTimeFormat("en-US", {
+          timeZone: ATL_TZ,
+          weekday: "long"
+        }).format(targetDate).toUpperCase();
+        var monthText = new Intl.DateTimeFormat("en-US", {
+          timeZone: ATL_TZ,
+          month: "long"
+        }).format(targetDate).toUpperCase();
+        var dayNumber = new Intl.DateTimeFormat("en-US", {
+          timeZone: ATL_TZ,
+          day: "numeric"
+        }).format(targetDate);
+        var yearNumber = new Intl.DateTimeFormat("en-US", {
+          timeZone: ATL_TZ,
+          year: "numeric"
+        }).format(targetDate);
+
+        return weekdayText + ", " + monthText + " " + dayNumber + ", " + yearNumber;
+      }
+
+      function applyDate() {
+        var nodes = document.querySelectorAll("[data-auto-date]");
+        for (var i = 0; i < nodes.length; i++) {
+          nodes[i].textContent = formatAtlantaTuesday();
+        }
+      }
+
+      function tzParts(date, timeZone) {
+        var parts = new Intl.DateTimeFormat("en-US", {
+          timeZone: timeZone,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false
+        }).formatToParts(date);
+        var obj = {};
+        for (var i = 0; i < parts.length; i++) {
+          if (parts[i].type !== "literal") obj[parts[i].type] = parts[i].value;
+        }
+        return {
+          year: parseInt(obj.year, 10),
+          month: parseInt(obj.month, 10),
+          day: parseInt(obj.day, 10),
+          hour: parseInt(obj.hour, 10),
+          minute: parseInt(obj.minute, 10),
+          second: parseInt(obj.second, 10)
+        };
+      }
+
+      function formatCountdown(ms) {
+        var total = Math.max(0, Math.floor(ms / 1000));
+        var h = Math.floor(total / 3600);
+        var m = Math.floor((total % 3600) / 60);
+        var s = total % 60;
+        function pad(n) { return n < 10 ? "0" + n : "" + n; }
+        return pad(h) + ":" + pad(m) + ":" + pad(s);
+      }
+
+      function applyAtlantaCountdown() {
+        var node = document.getElementById("live-countdown");
+        var chip = document.getElementById("live-countdown-chip");
+        var inlineNode = document.getElementById("live-countdown-inline");
+        var inlineChip = document.getElementById("live-countdown-chip-inline");
+        var clockNode = document.getElementById("atl-current-time");
+        if (!node && !inlineNode && !clockNode) return;
+
+        var now = new Date();
+        var atl = tzParts(now, ATL_TZ);
+        if (clockNode) {
+          clockNode.textContent = formatClock(atl.hour, atl.minute, atl.second);
+        }
+        var nowPseudoUtc = Date.UTC(atl.year, atl.month - 1, atl.day, atl.hour, atl.minute, atl.second);
+        var targetPseudoUtc = Date.UTC(atl.year, atl.month - 1, atl.day, EDITABLE.liveHour24, EDITABLE.liveMinute, 0);
+        var diff = targetPseudoUtc - nowPseudoUtc;
+        var tenMinutesMs = EDITABLE.liveBlinkMinutes * 60 * 1000;
+        var sinceLiveMs = nowPseudoUtc - targetPseudoUtc;
+
+        if (chip) {
+          chip.classList.remove("is-live");
+          chip.classList.remove("is-live-blink");
+        }
+        if (inlineChip) {
+          inlineChip.classList.remove("is-live");
+          inlineChip.classList.remove("is-live-blink");
+        }
+
+        if (diff <= 0) {
+          if (node) node.textContent = "00:00:00";
+          if (inlineNode) inlineNode.textContent = "00:00:00";
+          if (chip && sinceLiveMs >= 0) {
+            chip.classList.add("is-live");
+            if (inlineChip) inlineChip.classList.add("is-live");
+            if (sinceLiveMs <= tenMinutesMs) {
+              chip.classList.add("is-live-blink");
+              if (inlineChip) inlineChip.classList.add("is-live-blink");
+            }
+          }
+          return;
+        }
+        var text = formatCountdown(diff);
+        if (node) node.textContent = text;
+        if (inlineNode) inlineNode.textContent = text;
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", function () {
+          applyEditableSettings();
+          applyDate();
+          applyAtlantaCountdown();
+          setInterval(applyAtlantaCountdown, 1000);
+        });
+      } else {
+        applyEditableSettings();
+        applyDate();
+        applyAtlantaCountdown();
+        setInterval(applyAtlantaCountdown, 1000);
+      }
+    })();
+  </script>
+</head>
+<body style="margin:0;padding:0;background:#ece6dc;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ece6dc;">
+    <tr>
+      <td align="center" style="padding:20px 10px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;background:#fdfaf3;border-radius:14px;overflow:hidden;border:1px solid #d7c4a3;">
+
+          <tr>
+	            <td style="padding:20px 24px 10px 24px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#1f2328;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td valign="middle">
+                    <img id="email-header-logo" src="https://cdn.jsdelivr.net/gh/juniper1947/global-image-library@main/docs/uploads/2026-04-pxp-email-template-assets/01-header-logo-storage-googleapis-msgsndr-69615410cef10154ccb18495.png" width="40" height="40" alt="PXP Logo" style="display:block;border:0;outline:none;text-decoration:none;width:40px !important;max-width:40px !important;min-width:40px !important;height:40px !important;max-height:40px !important;" />
+                  </td>
+	                  <td valign="middle" style="padding-left:10px;font-size:12px;line-height:1.2;letter-spacing:0.3px;color:#d4af7a;font-weight:600;">
+                    Powered by Prayer
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:12px 28px 0 28px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td valign="top" style="text-align:left;color:#23272e;">
+                    <h1 style="margin:0;font-size:28px;line-height:1.14;font-weight:600;color:#23272e;">The R's of Transformation</h1>
+                  </td>
+                  <td valign="top" align="right" style="text-align:right;color:#6f6250;font-size:11px;line-height:1.25;white-space:nowrap;padding-left:12px;">
+                    <div>Date: <span data-auto-date>TUESDAY, MARCH 31, 2026</span></div>
+                    <div>Time: <strong id="atl-current-time">--:--:--</strong> <span id="atl-timezone-label">(EDT)</span></div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+	            <td style="padding:12px 28px 0 28px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#32363d;font-size:16px;line-height:1.7;">
+              Hello Prayer Warriors,<br /><br />
+              Join us as Prophetess Shantal Long shares a powerful message, <strong>"The R's of Transformation,"</strong> and experience how God moves when we open our hearts to Him.<br /><br />
+              We are going live today at <strong data-live-time-label>7:30 AM</strong> on all our social media platforms. If you're in need of encouragement, renewal, or a fresh word, this is for you.
+            </td>
+          </tr>
+
+          <tr>
+            <td align="left" style="padding:18px 28px 8px 28px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding:0 8px 0 0;">
+                    <a class="cta-anim" id="live-link-button" href="https://www.youtube.com/@PoweredXPrayers/live" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#b89256;color:#ffffff;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700;font-size:14px;padding:11px 16px;border-radius:999px;border:1px solid #9f7d43;">&#128308;&nbsp;Join Live Now</a>
+                  </td>
+                  <td valign="middle">
+                    <span class="timer-chip" id="live-countdown-chip-inline"><span id="live-countdown-inline">00:00:00</span></span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td align="center" style="padding:8px 28px 4px 28px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:360px;border:1px solid #d9c6a6;border-radius:10px;background:#f4efe6;">
+                <tr>
+                  <td style="padding:0;">
+                    <a id="latest-video-link-image" href="https://www.youtube.com/watch?v=7zyTup1sU2U" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:#23272e;display:block;">
+                      <img id="latest-video-thumb" src="https://img.youtube.com/vi/7zyTup1sU2U/hqdefault.jpg" width="360" alt="Watch YouTube live upload" style="display:block;width:100%;max-width:360px;height:auto;border:0;border-top-left-radius:10px;border-top-right-radius:10px;" />
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 12px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;text-align:left;background:#f4efe6;border-top:1px solid #d9c6a6;border-bottom-left-radius:10px;border-bottom-right-radius:10px;">
+                    <a id="latest-video-link-title" href="https://www.youtube.com/watch?v=7zyTup1sU2U" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:#23272e;display:block;">
+                      <span style="display:inline-block;background:#b89256;color:#ffffff;font-size:10px;line-height:1;font-weight:700;padding:6px 8px;border-radius:999px;vertical-align:middle;">PLAY</span>
+                      <span id="latest-video-title" style="display:inline-block;padding-left:8px;font-size:13px;line-height:1.4;font-weight:600;vertical-align:middle;">IT'S TIME. I AM DOING A NEW THING — STEP OUT OF THE WINEPRESS</span>
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td id="latest-video-date" align="center" style="padding:2px 28px 0 28px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.4;color:#7f6440;font-style:italic;">
+              Uploaded on April 21, 2026</td>
+          </tr>
+
+          <tr>
+	            <td style="padding:12px 28px 0 28px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#32363d;font-size:16px;line-height:1.6;font-weight:600;">
+              Follow Us
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:8px 28px 0 28px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding:0 8px 0 0;">
+                    <a class="cta-anim" href="https://www.facebook.com/poweredxprayer/" target="_blank" rel="noopener noreferrer" style="display:inline-block;width:34px;height:34px;line-height:34px;text-align:center;background:#1877f2;color:#ffffff;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;font-weight:700;text-decoration:none;border-radius:50%;">f</a>
+                  </td>
+                  <td style="padding:0 8px 0 0;">
+                    <a class="cta-anim" href="https://www.facebook.com/shantal.long1" target="_blank" rel="noopener noreferrer" style="display:inline-block;width:34px;height:34px;line-height:34px;text-align:center;background:#0e5bc2;color:#ffffff;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:700;text-decoration:none;border-radius:50%;">FB+</a>
+                  </td>
+                  <td style="padding:0 8px 0 0;">
+                    <a class="cta-anim" href="https://www.instagram.com/thepoweredxprayer/" target="_blank" rel="noopener noreferrer" style="display:inline-block;width:34px;height:34px;line-height:34px;text-align:center;background:#e1306c;color:#ffffff;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;font-weight:700;text-decoration:none;border-radius:50%;">IG</a>
+                  </td>
+                  <td style="padding:0 8px 0 0;">
+                    <a class="cta-anim" href="https://www.youtube.com/@PoweredXPrayers?sub_confirmation=1" target="_blank" rel="noopener noreferrer" style="display:inline-block;width:34px;height:34px;line-height:34px;text-align:center;background:#ff0000;color:#ffffff;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;font-weight:700;text-decoration:none;border-radius:50%;">YT</a>
+                  </td>
+                  <td style="padding:0 8px 0 0;">
+                    <a class="cta-anim" href="https://www.tiktok.com/@poweredbyprayer7" target="_blank" rel="noopener noreferrer" style="display:inline-block;width:34px;height:34px;line-height:34px;text-align:center;background:#000000;color:#ffffff;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:700;text-decoration:none;border-radius:50%;">TT</a>
+                  </td>
+                  <td>
+                    <a class="cta-anim" href="https://docs.google.com/forms/d/e/1FAIpQLSdOIsUDqlj94LkjFe6DkTmF8Kh96sEhzdzsnMVnxPynoSWafA/viewform" target="_blank" rel="noopener noreferrer" style="display:inline-block;width:34px;height:34px;line-height:34px;text-align:center;background:#b89256;color:#ffffff;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:700;text-decoration:none;border-radius:50%;">PR</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+	            <td style="padding:16px 28px 0 28px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#32363d;font-size:16px;line-height:1.7;">
+              We'd love for you to invite your friends and loved ones to join us as well.<br /><br />
+              We are truly grateful for everyone who has given and for those who continue to support the ministry - your generosity is a blessing.
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:18px 24px 0 24px;">
+	              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d9c6a6;border-radius:12px;background:#f4efe6;">
+                <tr>
+	                  <td style="padding:14px 14px 8px 14px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#23272e;font-size:17px;line-height:1.4;font-weight:600;">
+                    Shop
+                  </td>
+                </tr>
+                <tr>
+	                  <td style="padding:0 14px 12px 14px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#5d5346;font-size:14px;line-height:1.7;">
+                    Explore faith-inspired products and ministry resources designed to encourage your prayer journey.
+                  </td>
+                </tr>
+                <tr>
+                  <td align="left" style="padding:0 14px 14px 14px;">
+                    <a class="cta-anim" href="https://go.poweredxprayers.com/shop" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#262b31;color:#f8f4ec;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;font-weight:600;padding:10px 16px;border-radius:8px;border:1px solid #3d444d;">Visit Shop</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:18px 24px 0 24px;">
+		              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d9c6a6;border-radius:12px;background:#fffaf0;">
+                <tr>
+                  <td style="padding:14px 14px 8px 14px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#23272e;font-size:17px;line-height:1.4;font-weight:600;">
+                    For those who feel led to support
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center" style="padding:6px 10px 16px 10px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td align="center" style="padding:4px;">
+                          <a class="cta-anim" href="https://square.link/u/N8O3IZOr" target="_blank" rel="noopener noreferrer" style="display:block;background:#b89256;color:#ffffff;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;font-weight:700;padding:10px 8px;border-radius:8px;line-height:1.2;">&#10084;&nbsp;Donate</a>
+                        </td>
+                        <td align="center" style="padding:4px;">
+                          <a class="cta-anim" href="https://cash.app/$poweredxprayer?qr=1" target="_blank" rel="noopener noreferrer" style="display:block;background:#ffffff;color:#b89256;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;font-weight:700;padding:9px 8px;border:1px solid #b89256;border-radius:8px;line-height:1.2;">&#128176;&nbsp;Give via CashApp</a>
+                        </td>
+                        <td align="center" style="padding:4px;">
+                          <a class="cta-anim" href="https://docs.google.com/forms/d/e/1FAIpQLSdOIsUDqlj94LkjFe6DkTmF8Kh96sEhzdzsnMVnxPynoSWafA/viewform" target="_blank" rel="noopener noreferrer" style="display:block;background:#262b31;color:#f8f4ec;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;font-weight:700;padding:10px 8px;border:1px solid #3d444d;border-radius:8px;line-height:1.2;">&#128591;&nbsp;Prayer Request</a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:18px 24px 0 24px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d9c6a6;border-radius:12px;background:#f7f2e8;">
+                <tr>
+                  <td style="padding:14px 14px 10px 14px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#23272e;font-size:17px;line-height:1.4;font-weight:600;">
+                    Next Email Templates
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 10px 14px 10px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td class="template-card-cell" valign="top" width="25%" style="padding:4px;">
+                          <table class="template-card-inner" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d9c6a6;border-radius:10px;background:#ffffff;">
+                            <tr>
+                              <td style="padding:10px 8px 7px 8px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#2b3138;font-size:12px;line-height:1.35;font-weight:700;text-align:center;">
+                                Announcement Invite
+                              </td>
+                            </tr>
+                            <tr>
+                              <td align="center" style="padding:0 8px 10px 8px;">
+                                <a class="cta-anim" href="file:///Volumes/WD%20SSD/VSCODE/Cheero%20Marketing%20GHL%20invites/announcement-email-template.html" target="_blank" rel="noopener noreferrer" style="display:block;background:#b89256;color:#ffffff;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;font-weight:700;padding:9px 6px;border-radius:8px;line-height:1.2;">Open Template</a>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="template-card-cell" valign="top" width="25%" style="padding:4px;">
+                          <table class="template-card-inner" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d9c6a6;border-radius:10px;background:#ffffff;">
+                            <tr>
+                              <td style="padding:10px 8px 7px 8px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#2b3138;font-size:12px;line-height:1.35;font-weight:700;text-align:center;">
+                                Bakle Geluk
+                              </td>
+                            </tr>
+                            <tr>
+                              <td align="center" style="padding:0 8px 10px 8px;">
+                                <a class="cta-anim" href="file:///Volumes/WD%20SSD/VSCODE/Email%20Maketing%20Project%20/Bakle%20Geluk/email-template-next-project-local-images-no-pixel.html" target="_blank" rel="noopener noreferrer" style="display:block;background:#b89256;color:#ffffff;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;font-weight:700;padding:9px 6px;border-radius:8px;line-height:1.2;">Open Template</a>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="template-card-cell" valign="top" width="25%" style="padding:4px;">
+                          <table class="template-card-inner" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d9c6a6;border-radius:10px;background:#ffffff;">
+                            <tr>
+                              <td style="padding:10px 8px 7px 8px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#2b3138;font-size:12px;line-height:1.35;font-weight:700;text-align:center;">
+                                Go Grren
+                              </td>
+                            </tr>
+                            <tr>
+                              <td align="center" style="padding:0 8px 10px 8px;">
+                                <a class="cta-anim" href="file:///Volumes/WD%20SSD/VSCODE/Email%20Maketing%20Project%20/Go%20Grren/go-grren-email-template.html" target="_blank" rel="noopener noreferrer" style="display:block;background:#b89256;color:#ffffff;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;font-weight:700;padding:9px 6px;border-radius:8px;line-height:1.2;">Open Template</a>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="template-card-cell" valign="top" width="25%" style="padding:4px;">
+                          <table class="template-card-inner" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d9c6a6;border-radius:10px;background:#ffffff;">
+                            <tr>
+                              <td style="padding:10px 8px 7px 8px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#2b3138;font-size:12px;line-height:1.35;font-weight:700;text-align:center;">
+                                Powered by Prayer
+                              </td>
+                            </tr>
+                            <tr>
+                              <td align="center" style="padding:0 8px 10px 8px;">
+                                <a class="cta-anim" href="file:///Users/kone/Documents/Email%20pxp%20Marketing/email-template.html" target="_blank" rel="noopener noreferrer" style="display:block;background:#262b31;color:#f8f4ec;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;font-weight:700;padding:9px 6px;border-radius:8px;line-height:1.2;">Current Template</a>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+	            <td style="padding:18px 28px 20px 28px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#32363d;font-size:16px;line-height:1.7;">
+              Blessings,<br />
+              Powered X Prayer Team
+            </td>
+          </tr>
+
+          <tr>
+	            <td style="padding:20px 24px 20px 24px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#5d5346;font-size:12px;line-height:1.7;text-align:center;background:#f4efe6;border-top:1px solid #d9c6a6;">
+	              Powered by Prayer<br />
+	              <a class="cta-anim" href="https://www.facebook.com/poweredxprayer/" target="_blank" rel="noopener noreferrer" style="color:#b89256;text-decoration:underline;">Facebook Page</a>
+	              &nbsp;|&nbsp;
+	              <a class="cta-anim" href="https://www.facebook.com/shantal.long1" target="_blank" rel="noopener noreferrer" style="color:#b89256;text-decoration:underline;">Facebook Profile</a>
+	              &nbsp;|&nbsp;
+	              <a class="cta-anim" href="https://www.instagram.com/thepoweredxprayer/" target="_blank" rel="noopener noreferrer" style="color:#b89256;text-decoration:underline;">Instagram</a>
+	              &nbsp;|&nbsp;
+	              <a class="cta-anim" href="https://www.youtube.com/@PoweredXPrayers?sub_confirmation=1" target="_blank" rel="noopener noreferrer" style="color:#b89256;text-decoration:underline;">YouTube</a>
+	            </td>
+	          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

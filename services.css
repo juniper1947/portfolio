@@ -1,0 +1,95 @@
+:root {
+  --bg: #f5f5f5;
+  --surface: #ffffff;
+  --text: #111111;
+  --muted: #4d4d4d;
+  --line: #d9d9d9;
+  --accent: #d2b48c;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+h1, h2 {
+  font-family: "Archivo", "Avenir Next", sans-serif;
+  margin: 0;
+}
+
+.container {
+  width: min(980px, 94%);
+  margin: 0 auto;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid var(--line);
+  background: rgba(245, 245, 245, 0.95);
+  backdrop-filter: blur(8px);
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 0;
+}
+
+.brand,
+.back-link {
+  text-decoration: none;
+  color: #1b1b1b;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.back-link {
+  border: 1px solid #b89366;
+  background: linear-gradient(135deg, #ead8c0 0%, #d2b48c 100%);
+  border-radius: 999px;
+  padding: 0.42rem 0.75rem;
+}
+
+main {
+  padding: 1.1rem 0 1.5rem;
+}
+
+h1 {
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+}
+
+.sub {
+  margin-top: 0.35rem;
+  margin-bottom: 0.8rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.service-detail {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: 12px;
+  padding: 0.72rem 0.78rem;
+}
+
+.service-detail + .service-detail {
+  margin-top: 0.6rem;
+}
+
+.service-detail h2 {
+  font-size: 0.98rem;
+}
+
+.service-detail p {
+  margin: 0.25rem 0 0;
+  font-size: 0.84rem;
+  color: #3f3f3f;
+}

@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice Studio</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f1ea;
+      --surface: #ffffff;
+      --surface-soft: #f8f5ef;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #1f314a;
+      --accent-soft: #e9eef6;
+      --border: #dcdfe5;
+      --shadow: none;
+      --radius: 12px;
+      font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 13px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body {
+      line-height: 1.38;
+    }
+
+    body.app-locked .page {
+      display: none;
+    }
+
+    body.app-unlocked .license-gate {
+      display: none;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+      color: inherit;
+    }
+
+    .page {
+      max-width: 440px;
+      margin: 0 auto;
+      padding: 14px 14px 24px;
+    }
+
+    header {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .title-block {
+      display: grid;
+      gap: 9px;
+    }
+
+    .title-block h1 {
+      margin: 0;
+      font-size: 1.35rem;
+      letter-spacing: -0.03em;
+    }
+
+    .title-block p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .live-clock {
+      margin-top: 6px;
+      font-size: 0.72rem;
+      color: #6b7280;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .live-timezone {
+      margin-top: 2px;
+      font-size: 0.68rem;
+      color: #9ca3af;
+      font-weight: 500;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      align-items: center;
+    }
+
+    .actions .button.icon {
+      height: 32px;
+      padding: 0 6px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 10px;
+    }
+
+    .compact-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .field {
+      display: grid;
+      gap: 4px;
+    }
+
+    .date-field {
+      position: relative;
+    }
+
+    .date-field input[type="date"] {
+      padding-left: 54px;
+    }
+
+    .date-field .date-chip {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.72rem;
+      color: var(--muted);
+      opacity: 0.72;
+      pointer-events: none;
+      line-height: 1;
+    }
+
+    .date-field.has-value .date-chip,
+    .date-field input[type="date"]:focus + .date-chip {
+      display: none;
+    }
+
+    label {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface-soft);
+      padding: 8px 10px;
+      font-size: 0.86rem;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: rgba(107, 114, 128, 0.62);
+      opacity: 1;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #9ca3af;
+    }
+
+    .row {
+      display: grid;
+      gap: 9px;
+    }
+
+    .row-cols-1 {
+      grid-template-columns: 1fr;
+    }
+
+    .row-cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .row-cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .row-cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .button {
+      appearance: none;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 10px;
+      cursor: pointer;
+      background: var(--surface-soft);
+      color: var(--text);
+      font-family: "Trebuchet MS", Helvetica, sans-serif;
+      font-size: 20px;
+      letter-spacing: 0;
+      word-spacing: 2px;
+      color: #000000;
+      font-weight: 700;
+      text-decoration: none;
+      font-style: normal;
+      font-variant: normal;
+      text-transform: none;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+      will-change: transform;
+      text-decoration: none;
+    }
+
+    .button.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(31, 49, 74, 0.12);
+      border-color: #b9c1ce;
+    }
+
+    .button.primary:hover:not(:disabled) {
+      box-shadow: 0 8px 16px rgba(31, 49, 74, 0.22);
+      background: #1a2a3f;
+      border-color: #1a2a3f;
+    }
+
+    .button:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px rgba(31, 49, 74, 0.12);
+    }
+
+    .button:focus-visible {
+      outline: 2px solid #93a4bf;
+      outline-offset: 2px;
+    }
+
+    .button.icon {
+      width: 100%;
+      height: 34px;
+      padding: 0 10px;
+    }
+
+    .button.compact {
+      height: 34px;
+      padding: 0 10px;
+      font-size: 0.72rem;
+    }
+
+    .button.small {
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-size: 0.8rem;
+    }
+
+    .button.tiny {
+      height: 34px;
+      padding: 0 8px;
+      font-size: 0.68rem;
+      border-radius: 10px;
+    }
+
+    .button.disabled,
+    .button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .summary {
+      border-radius: 12px;
+      padding: 12px;
+      background: var(--surface-soft);
+      position: static;
+    }
+
+    .summary h2,
+    .section-title h2 {
+      margin: 0;
+      font-size: 0.84rem;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .summary p,
+    .task-line,
+    .detail-line {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.72rem;
+    }
+
+    .summary-list,
+    .task-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .summary-row,
+    .task-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .task-row strong,
+    .summary-row strong {
+      font-weight: 700;
+    }
+
+    .summary-row-left,
+    .summary-row-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .summary-row-right {
+      margin-left: auto;
+    }
+
+    .summary-delete {
+      min-width: 32px;
+      height: 32px;
+      padding: 0 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      color: #991b1b;
+      font-size: 0.9rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .summary-delete:hover {
+      background: #fee2e2;
+    }
+
+    .task-row small {
+      color: var(--muted);
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .task-row button {
+      min-width: 38px;
+      height: 38px;
+      padding: 0;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      color: var(--accent);
+    }
+
+    .task-row button:hover {
+      background: #f3f4f6;
+    }
+
+    .button-row {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .task-action-row {
+      margin-top: 12px;
+      gap: 12px;
+    }
+
+    /* Task editor-specific spacing tune: looser, easier to scan */
+    #taskEditor.compact-grid {
+      gap: 14px;
+    }
+
+    #taskEditor .row {
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    #taskEditor .field {
+      gap: 8px;
+    }
+
+    #taskEditor input,
+    #taskEditor select,
+    #taskEditor textarea {
+      min-height: 44px;
+      line-height: 1.45;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    #taskEditor textarea {
+      min-height: 96px;
+    }
+
+    #taskEditor .task-amount-preview {
+      margin: 8px 0 12px;
+      line-height: 1.45;
+    }
+
+    #taskEditor .task-action-row {
+      margin-top: 20px;
+      margin-bottom: 14px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: 12px !important;
+      row-gap: 12px;
+    }
+
+    /* Hard split between Save and Clear columns (in case grid gap is collapsed by cached/old rules) */
+    #taskEditor .task-action-row > .field + .field {
+      margin-left: 0;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 4px 10px;
+      border-radius: 999px;
+      letter-spacing: 0.01em;
+      font-weight: 700;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      border: none;
+      margin: 10px 0;
+    }
+
+    .preview-text {
+      margin: 8px 0 0;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      color: var(--text);
+      white-space: pre-wrap;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .preview-logo {
+      display: block;
+      width: 180px;
+      max-width: 100%;
+      height: auto;
+      margin: 0 0 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .upload-box {
+      width: 100%;
+      border: 1px dashed #ef4444;
+      border-radius: 10px;
+      background: #fff5f5;
+      padding: 10px;
+      display: grid;
+      gap: 4px;
+      cursor: pointer;
+      text-align: center;
+      appearance: none;
+      font: inherit;
+    }
+
+    .upload-box strong {
+      font-size: 0.82rem;
+      color: #991b1b;
+      font-weight: 600;
+    }
+
+    .upload-box span {
+      font-size: 0.74rem;
+      color: #b91c1c;
+    }
+
+    .file-indicator {
+      margin-top: 6px;
+      font-size: 0.7rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .file-indicator span {
+      display: inline-block;
+      margin-right: 6px;
+      margin-bottom: 4px;
+      padding: 2px 4px 2px 6px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+    }
+
+    .file-indicator button {
+      margin-left: 4px;
+      border: none;
+      background: transparent;
+      color: #b91c1c;
+      font-size: 0.72rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .file-input-hidden {
+      display: none;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .task-editor-alert {
+      margin: 6px 0 8px;
+      font-size: 0.64rem;
+      color: #dc2626 !important;
+      font-weight: 400;
+      font-style: italic;
+      line-height: 1.35;
+      min-height: 1.35em;
+    }
+
+    #taskEditor.invalid {
+      border-color: #ef4444;
+      box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.2);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%) translateY(18px);
+      opacity: 0;
+      pointer-events: none;
+      background: #27231f;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      z-index: 30;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .layout {
+      display: grid;
+      gap: 12px;
+    }
+
+    .footer-setup {
+      margin-top: 12px;
+    }
+
+    .footer-setup > summary {
+      list-style: none;
+      cursor: pointer;
+      font-size: 0.74rem;
+      color: #b91c1c;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      padding-left: 24px;
+    }
+
+    .footer-setup > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .footer-setup > summary::before {
+      content: "⚙";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #b91c1c;
+      font-size: 0.95rem;
+      line-height: 1;
+    }
+
+    .footer-setup > summary::after {
+      content: "▾";
+      font-size: 1.15rem;
+      color: #b91c1c;
+      transition: transform 0.18s ease;
+      line-height: 1;
+    }
+
+    .footer-setup[open] > summary::after {
+      transform: rotate(180deg);
+    }
+
+    .footer-setup-content {
+      margin-top: 8px;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .preview-links {
+      margin-top: 8px;
+      font-size: 0.68rem;
+      color: var(--muted);
+      display: grid;
+      gap: 4px;
+    }
+
+    .preview-links a {
+      color: #2563eb;
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .history-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .history-summary {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .history-arrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      color: #6b7280;
+      font-size: 12px;
+      transition: transform 0.18s ease;
+    }
+
+    .history-item.open .history-arrow {
+      transform: rotate(90deg);
+    }
+
+    .history-main {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .history-title {
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .history-sub {
+      font-size: 11px;
+      color: #6b7280;
+      white-space: nowrap;
+    }
+
+    .history-total {
+      font-size: 12px;
+      font-weight: 700;
+      color: #111827;
+      white-space: nowrap;
+    }
+
+    .history-details {
+      border-top: 1px solid #e5e7eb;
+      padding: 10px 12px;
+      font-size: 11px;
+      color: #374151;
+      display: grid;
+      gap: 8px;
+      background: #f9fafb;
+    }
+
+    .history-meta {
+      display: grid;
+      gap: 4px;
+    }
+
+    .history-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .license-gate {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .license-card {
+      width: min(420px, 100%);
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .license-card h2 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    .license-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+
+    .license-card .field {
+      gap: 6px;
+    }
+
+    .license-note {
+      font-size: 0.75rem !important;
+    }
+
+    .setup-links {
+      margin: 0;
+      font-size: 0.72rem;
+      color: var(--muted);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .setup-links a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    .app-meta {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding: 8px 0 12px;
+    }
+
+    .app-version {
+      font-size: 0.68rem;
+      color: #6b7280;
+      line-height: 1.1;
+    }
+
+    .support-mini {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.66rem;
+      line-height: 1.1;
+      font-weight: 600;
+    }
+
+    .build-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #eef2ff;
+      color: #1e3a8a;
+      font-size: 0.66rem;
+      line-height: 1.1;
+      font-weight: 700;
+    }
+
+    .admin-mini {
+      cursor: pointer;
+    }
+
+    .update-inline {
+      border-color: #f59e0b;
+      background: #fffbeb;
+      color: #92400e;
+      font-weight: 700;
+    }
+
+    .feedback-inline {
+      border-color: #93c5fd;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .notify-flash {
+      animation: notifyPulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes notifyPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+      50% { box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); }
+    }
+
+    .invoice-template {
+      margin-top: 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .invoice-template-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .invoice-brand {
+      display: grid;
+      gap: 8px;
+    }
+
+    .invoice-logo {
+      width: 88px;
+      height: 88px;
+      object-fit: contain;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 6px;
+    }
+
+    .invoice-logo-placeholder {
+      width: 88px;
+      height: 88px;
+      border: 1px dashed #9ca3af;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6b7280;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #f9fafb;
+    }
+
+    .invoice-meta {
+      text-align: right;
+      font-size: 0.8rem;
+      color: #374151;
+      display: grid;
+      gap: 4px;
+    }
+
+    .invoice-title {
+      margin: 0;
+      font-size: 1.15rem;
+      letter-spacing: 0.02em;
+    }
+
+    .invoice-address {
+      font-size: 0.82rem;
+      color: #4b5563;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    .invoice-party-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .invoice-party {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      background: #fcfcfd;
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+
+    .invoice-party strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #111827;
+    }
+
+    .invoice-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    .invoice-table th,
+    .invoice-table td {
+      border: 1px solid var(--border);
+      padding: 7px 8px;
+      vertical-align: top;
+    }
+
+    .invoice-table th {
+      background: #f3f4f6;
+      text-align: left;
+      color: #111827;
+    }
+
+    .invoice-summary-box {
+      margin-left: auto;
+      width: min(280px, 100%);
+      display: grid;
+      gap: 8px;
+    }
+
+    .invoice-summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #f9fafb;
+      padding: 9px 10px;
+      font-size: 0.82rem;
+    }
+
+    .invoice-summary-row strong {
+      font-size: 0.9rem;
+    }
+
+    .invoice-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      font-size: 0.78rem;
+      color: #4b5563;
+      white-space: pre-wrap;
+      line-height: 1.55;
+    }
+
+    @media print {
+      body.print-preview-only * {
+        visibility: hidden !important;
+      }
+
+      body.print-preview-only #invoicePreviewSection,
+      body.print-preview-only #invoicePreviewSection * {
+        visibility: visible !important;
+      }
+
+      body.print-preview-only #invoicePreviewSection {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        border: none;
+        margin: 0;
+        padding: 0;
+      }
+
+    }
+
+    @media (max-width: 420px) {
+      .row-cols-2,
+      .row-cols-3,
+      .row-cols-4 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="app-locked">
+  <section id="licenseGate" class="license-gate">
+    <div class="license-card">
+      <h2>Invoice Studio License</h2>
+      <p>Enter your license key to unlock this app on this device.</p>
+      <div class="field">
+        <label for="licenseKeyInput">License key</label>
+        <input id="licenseKeyInput" type="text" placeholder="INVBUY-V010-D0001" autocomplete="off" />
+      </div>
+      <button id="unlockAppButton" class="button primary" type="button">Unlock App</button>
+      <p id="licenseMessage" class="license-note"></p>
+      <p id="licenseBuildInfo" class="license-note"></p>
+      <p class="license-note">Need a key? Contact support: manilacreatives.store@gmail.com</p>
+    </div>
+  </section>
+  <main class="page">
+    <header>
+      <div class="title-block">
+        <div>
+          <h1>Invoice Studio</h1>
+          <p>Build task-based invoices with clean totals and email delivery.</p>
+          <p id="liveClock" class="live-clock">--:--:--</p>
+          <p id="liveTimeZone" class="live-timezone">Timezone: --</p>
+        </div>
+	        <div class="actions">
+	          <button class="button icon" id="shareInvoiceButton" type="button" title="Share invoice summary">
+	            <span>Share App</span>
+	          </button>
+	          <button class="button icon" id="exportPdfButton" type="button" title="Export preview PDF">
+	            <span>Export PDF</span>
+	          </button>
+            <button class="button icon" id="transactionHistoryButton" type="button" title="Show transaction history">
+              <span>Transaction History</span>
+            </button>
+	        </div>
+	      </div>
+	    </header>
+    <section class="card hidden" id="transactionHistoryPanel">
+      <div class="section-title">
+        <h2>Transaction History</h2>
+        <button
+          class="button tiny"
+          id="closeTransactionHistoryButton"
+          type="button"
+          title="Close transaction history"
+          aria-label="Close transaction history"
+          style="margin-left:auto;color:#dc2626;border-color:#fecaca;background:#fff5f5;min-width:32px;padding:0 10px;"
+        >X</button>
+      </div>
+      <div class="field" style="margin-bottom:8px;">
+        <input id="transactionHistorySearch" type="text" placeholder="Search invoice number (e.g. INV-2026-00230)" />
+      </div>
+      <div id="transactionHistoryList" class="preview-links"></div>
+    </section>
+
+    <section class="card compact-grid">
+      <div class="row row-cols-2">
+        <div class="field">
+          <label for="invoiceId">Invoice ID</label>
+          <input id="invoiceId" type="text" readonly />
+        </div>
+        <div class="field">
+          <label for="invoiceDate">Invoice date</label>
+          <input id="invoiceDate" type="date" />
+        </div>
+      </div>
+      <div class="row row-cols-1">
+        <div class="field">
+          <label for="clientName">Buyer account name</label>
+          <input id="clientName" list="clientHistoryList" placeholder="Acme Buyer Account" type="text" />
+          <datalist id="clientHistoryList"></datalist>
+        </div>
+      </div>
+      <div class="row row-cols-2">
+        <div class="field">
+          <label for="senderName">Sender / Company</label>
+          <input id="senderName" placeholder="Your Name or Company" type="text" />
+        </div>
+        <div class="field">
+          <label for="recipientName">Recipient name(s)</label>
+          <input id="recipientName" placeholder="Name(s), separated by comma + space" type="text" />
+        </div>
+      </div>
+      <div class="row row-cols-2">
+        <div class="field">
+          <label for="clientEmail">Recipient email(s)</label>
+          <input id="clientEmail" list="emailHistoryList" placeholder="buyer@example.com, admin@example.com" type="text" inputmode="email" />
+          <datalist id="emailHistoryList"></datalist>
+        </div>
+        <div class="field">
+          <label for="ccEmail">CC email(s)</label>
+          <input id="ccEmail" placeholder="cc1@example.com, cc2@example.com" type="text" inputmode="email" />
+        </div>
+      </div>
+      <div class="row row-cols-1">
+        <div class="field">
+          <label for="noteText">Note</label>
+          <textarea id="noteText" rows="5" placeholder="Professional payment reminder message"></textarea>
+        </div>
+      </div>
+    </section>
+
+	    <div class="layout">
+      <div class="compact-grid">
+        <section class="card" id="taskEditor">
+          <div class="section-title">
+            <h2>Task editor</h2>
+          </div>
+          <div class="row row-cols-1">
+            <div class="field">
+	              <input id="taskCategory" list="taskCategoryHistoryList" placeholder="Select category" aria-label="Category" type="text" />
+	              <datalist id="taskCategoryHistoryList"></datalist>
+	            </div>
+          </div>
+          <div class="row row-cols-2">
+		            <div class="field">
+	                <input id="taskName" list="taskNameHistoryList" placeholder="Task name" aria-label="Task name" type="text" />
+	                <datalist id="taskNameHistoryList"></datalist>
+		            </div>
+            <div class="field">
+	              <input id="taskDescription" list="taskDescriptionHistoryList" placeholder="Description" aria-label="Description" type="text" />
+	              <datalist id="taskDescriptionHistoryList"></datalist>
+	            </div>
+          </div>
+          <div class="row row-cols-3">
+            <div class="field">
+              <input id="taskRate" type="number" min="0" step="0.01" value="8" placeholder="Rate" aria-label="Rate" />
+            </div>
+            <div class="field">
+			              <select id="taskHours" aria-label="Hours">
+		                <option value="">Hours</option>
+                <option value="0.25">0.25 (15 min)</option>
+                <option value="0.5">0.50 (30 min)</option>
+                <option value="0.75">0.75 (45 min)</option>
+                <option value="1">1 (60 min)</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+              </select>
+            </div>
+            <div class="field">
+              <select id="taskQuantity" aria-label="Quantity">
+                <option value="">Qty</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+          </div>
+          <p id="taskAmountPreview" class="task-amount-preview">Amount preview (before Save/Update): $0.00</p>
+          <div class="row row-cols-2">
+            <div class="field date-field">
+              <input id="taskStart" type="date" placeholder="Start" aria-label="Start date" />
+              <span class="date-chip">Start</span>
+            </div>
+            <div class="field date-field">
+              <input id="taskEnd" type="date" placeholder="End" aria-label="End date" />
+              <span class="date-chip">End</span>
+            </div>
+          </div>
+          <div class="row row-cols-3 task-action-row" style="margin-top:24px;margin-bottom:16px;column-gap:10px;row-gap:12px;">
+            <div class="field">
+	              <button class="button primary compact" id="saveTaskButton" type="button" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>
+                <span>Save</span>
+              </button>
+            </div>
+            <div class="field">
+	              <button class="button compact" id="resetTaskButton" type="button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3"/><path d="M18 12h3"/><path d="M12 3v3"/><path d="M12 18v3"/><path d="M5.6 5.6l2.1 2.1"/><path d="M16.3 16.3l2.1 2.1"/><path d="M5.6 18.4l2.1-2.1"/><path d="M16.3 7.7l2.1-2.1"/></svg>
+                <span>Clear</span>
+              </button>
+            </div>
+            <div class="field">
+              <button class="button tiny" id="clearCustomHistoryButton" type="button">Erase History</button>
+            </div>
+          </div>
+          <p id="taskEditorAlert" class="task-editor-alert"></p>
+	          <div class="row row-cols-1 hidden">
+	            <div class="field">
+	              <label>File upload</label>
+                <button id="uploadTrigger" type="button" class="upload-box">
+	                <strong>Choose File</strong>
+	                <span>Optional advanced feature: works when Google OAuth Client ID is configured.</span>
+                </button>
+	              <input class="file-input-hidden" id="taskScreenshots" type="file" accept=".png,.jpg,.jpeg,.pdf" multiple />
+	              <small id="fileIndicator" class="file-indicator">No file attached.</small>
+	            </div>
+	          </div>
+        </section>
+
+        <aside class="summary card">
+          <div>
+            <h2>Totals</h2>
+            <p>Payable amount and status.</p>
+          </div>
+          <div class="summary-list" id="categorySubtotals"></div>
+          <div class="divider"></div>
+          <div class="summary-row">
+            <span>Grand total</span>
+            <strong id="grandTotal">$0.00</strong>
+          </div>
+          <div class="field">
+            <label for="wiseLink">Payment link</label>
+            <input id="wiseLink" placeholder="Payment link" type="url" />
+          </div>
+          <div class="button-row">
+            <button class="button primary" id="sendInvoiceButton" type="button" disabled title="Send invoice">
+              <span>Send Invoice</span>
+            </button>
+          </div>
+        </aside>
+      </div>
+
+		      <section class="card invoice-preview" id="invoicePreviewSection">
+		        <div class="section-title">
+		          <h2>Invoice preview</h2>
+		        </div>
+            <img id="invoicePreviewLogo" class="preview-logo" alt="Invoice logo" />
+		        <pre id="invoicePreviewText" class="preview-text"></pre>
+            <div id="invoiceFileLinks" class="preview-links"></div>
+		      </section>
+		    </div>
+
+      <details id="emailSetupSection" class="card footer-setup">
+        <summary>Email send setup (EmailJS) <a href="https://dashboard.emailjs.com/sign-up" target="_blank" rel="noreferrer" style="font-size:0.7rem;color:#dc2626;font-style:italic;">(Setup free account)</a></summary>
+        <div class="footer-setup-content">
+          <div class="row row-cols-1">
+            <div class="field">
+              <label for="emailjsPublicKey">EmailJS Public Key <a href="https://dashboard.emailjs.com/admin/account" target="_blank" rel="noreferrer" style="font-size:0.7rem;color:#dc2626;font-style:italic;">(Get Public Key)</a></label>
+              <input id="emailjsPublicKey" placeholder="e.g. xxxxxxxxxxxxxxxx" type="text" />
+            </div>
+            <div class="field">
+              <label for="emailjsServiceId">EmailJS Service ID <a href="https://dashboard.emailjs.com/admin" target="_blank" rel="noreferrer" style="font-size:0.7rem;color:#dc2626;font-style:italic;">(Get Service ID)</a></label>
+              <input id="emailjsServiceId" placeholder="e.g. service_abc123" type="text" />
+            </div>
+            <div class="field">
+              <label for="emailjsTemplateId">EmailJS Template ID <a href="https://dashboard.emailjs.com/admin/templates" target="_blank" rel="noreferrer" style="font-size:0.7rem;color:#dc2626;font-style:italic;">(Get Template ID)</a></label>
+              <input id="emailjsTemplateId" placeholder="e.g. template_xyz789" type="text" />
+            </div>
+            <div class="field hidden">
+              <label for="googleDriveClientId">Google OAuth Client ID (Advanced optional) <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noreferrer" style="font-size:0.7rem;">(Get it here)</a></label>
+              <input id="googleDriveClientId" placeholder="xxxxxx.apps.googleusercontent.com" type="text" />
+            </div>
+            <p style="margin:0;font-size:0.72rem;color:#6b7280;">
+              EmailJS setup uses a free account (with free-plan limits).
+            </p>
+            <p style="margin:0;font-size:0.72rem;color:#6b7280;" class="hidden">
+              Advanced mode only: Drive upload + auto transaction sheet logging require Google OAuth Client ID. Basic email sending works without this.
+            </p>
+            <p style="margin:0;font-size:0.72rem;">
+              <a href="https://www.youtube.com/results?search_query=emailjs+setup+tutorial" target="_blank" rel="noreferrer" style="color:#dc2626;font-style:italic;">YouTube tutorial (EmailJS)</a>
+            </p>
+            <div class="field hidden">
+              <label>TEST UPLOAD (testing only)</label>
+              <button id="testUploadTrigger" type="button" class="upload-box">
+                <strong>Drop test file here or click to choose</strong>
+                <span>Advanced testing only. Requires Google OAuth Client ID.</span>
+              </button>
+              <input class="file-input-hidden" id="testUploadInput" type="file" accept=".png,.jpg,.jpeg,.pdf" multiple />
+              <small id="testUploadIndicator" class="file-indicator">No test file attached.</small>
+            </div>
+            <p style="margin:0;" class="hidden">
+              Admin setup mode: Send Test Email works without completing the full invoice form.
+            </p>
+            <div class="row row-cols-1">
+              <button class="button compact" id="sendTestEmailButton" type="button">
+                <span>Send Test Email</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </details>
+  </main>
+  <div class="app-meta">
+    <span id="appVersionText" class="app-version">Invoice Studio v0.1.0 (pre-release)</span>
+    <span id="trialStatusText" class="app-version"></span>
+    <a id="updateInlineButton" class="support-mini update-inline hidden" href="#" target="_blank" rel="noreferrer" title="New version available">Update</a>
+    <a id="feedbackInlineButtonBuyer" class="support-mini feedback-inline" href="https://mail.google.com/mail/?view=cm&fs=1&to=manilacreatives.store@gmail.com&su=Invoice%20Studio%20Feedback" target="_blank" rel="noreferrer" title="Send feedback">Feedback</a>
+    <a id="supportButtonBuyer" class="support-mini" href="https://mail.google.com/mail/?view=cm&fs=1&to=manilacreatives.store@gmail.com&su=Invoice%20Studio%20Support" target="_blank" rel="noreferrer" title="Contact support">Support</a>
+  </div>
+
+	  <div class="toast" id="toast">Action complete</div>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="./invoice-buyer.js"></script>
+
+</body>
+</html>

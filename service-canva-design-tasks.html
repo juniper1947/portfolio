@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Canva Design Tasks | Junnifer Ross Uy</title>
+  <meta name="description" content="Canva Design Tasks service page." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./service-detail.css?v=1" />
+  <link rel="stylesheet" href="./admin-editor.css?v=1" />
+  <style>
+    .samples.canva-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.7rem;
+    }
+
+    .canva-card {
+      min-height: 0;
+    }
+
+    .canva-thumb {
+      margin-top: 0.5rem;
+      aspect-ratio: 1 / 1;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #f2f2f2;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .canva-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .canva-thumb.has-image img {
+      display: block;
+    }
+
+    .canva-thumb-placeholder {
+      font-size: 0.74rem;
+      color: #666;
+      text-align: center;
+      padding: 0.6rem;
+      line-height: 1.35;
+    }
+
+    .canva-actions {
+      margin-top: 0.52rem;
+      display: flex;
+      gap: 0.42rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .canva-link-btn,
+    .canva-preview-btn {
+      border: 1px solid #b48a5d;
+      border-radius: 999px;
+      padding: 0.34rem 0.62rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      cursor: pointer;
+      line-height: 1.2;
+    }
+
+    .canva-link-btn {
+      background: #fff;
+      color: #4b3317;
+      display: none;
+    }
+
+    body.is-admin-auth .canva-link-btn {
+      display: inline-flex;
+    }
+
+    .canva-preview-btn {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      background: rgba(0, 0, 0, 0.58);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      pointer-events: none;
+    }
+
+    .preview-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.62);
+      padding: 1rem;
+    }
+
+    .preview-modal.open {
+      display: flex;
+    }
+
+    .preview-modal-dialog {
+      width: min(1100px, 96vw);
+      height: min(84vh, 900px);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #d9d9d9;
+      background: #fff;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .preview-modal-head {
+      padding: 0.55rem 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #e3e3e3;
+      background: #f7f7f7;
+      gap: 0.6rem;
+    }
+
+    .preview-modal-title {
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+
+    .preview-head-actions {
+      display: flex;
+      gap: 0.45rem;
+      align-items: center;
+    }
+
+    .preview-open-link,
+    .preview-close {
+      border: 1px solid #bfbfbf;
+      background: #fff;
+      border-radius: 8px;
+      padding: 0.26rem 0.58rem;
+      font-size: 0.74rem;
+      cursor: pointer;
+      font-weight: 700;
+      text-decoration: none;
+      color: #222;
+    }
+
+    .preview-content {
+      width: 100%;
+      height: 100%;
+      flex: 1;
+      background: #fafafa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-image,
+    .preview-iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: none;
+    }
+
+    .preview-image {
+      object-fit: contain;
+      background: #fff;
+    }
+
+    @media (max-width: 980px) {
+      .samples.canva-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .samples.canva-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <link rel="icon" type="image/png" href="https://res.cloudinary.com/dozcy2jve/image/upload/v1777065824/global-image-library/Portpolio_Imag_hf7ali.png" />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="container nav" aria-label="Service page navigation">
+      <a class="brand" href="./index.html">Junnifer Ross Uy</a>
+      <a class="back-link" href="./index.html#services">Back to Service Highlights</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="page-title" aria-labelledby="service-title">
+      <h1 id="service-title">Canva Design Tasks</h1>
+      <p>Branded social graphics and visual content creation.</p>
+    </section>
+
+    <section class="samples canva-grid" id="canva-grid" aria-label="Canva preview cards"></section>
+  </main>
+
+  <footer class="service-footer">
+    <div class="container">
+      <p class="footer-name">Junnifer Uy portfolio</p>
+    </div>
+  </footer>
+
+  <div class="preview-modal" id="preview-modal" aria-hidden="true">
+    <div class="preview-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="preview-modal-title">
+      <div class="preview-modal-head">
+        <p class="preview-modal-title" id="preview-modal-title">Preview</p>
+        <div class="preview-head-actions">
+          <a class="preview-open-link" id="preview-open-link" target="_blank" rel="noopener noreferrer">Open link ↗</a>
+          <button type="button" class="preview-close" id="preview-close">Close</button>
+        </div>
+      </div>
+      <div class="preview-content">
+        <img class="preview-image" id="preview-image" alt="Large preview" />
+        <iframe class="preview-iframe" id="preview-iframe" title="Large preview" loading="lazy"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var CARD_COUNT = 20;
+      var STORAGE_KEY = 'canva_card_links_v1';
+      var ADMIN_AUTH_KEY = 'jru_admin_authenticated';
+
+      var grid = document.getElementById('canva-grid');
+      var modal = document.getElementById('preview-modal');
+      var closeBtn = document.getElementById('preview-close');
+      var openLink = document.getElementById('preview-open-link');
+      var modalTitle = document.getElementById('preview-modal-title');
+      var modalImage = document.getElementById('preview-image');
+      var modalFrame = document.getElementById('preview-iframe');
+
+      function loadConfig() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          return raw ? JSON.parse(raw) : {};
+        } catch (err) {
+          return {};
+        }
+      }
+
+      function saveConfig(data) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      }
+
+      function isAdminAuthed() {
+        return sessionStorage.getItem(ADMIN_AUTH_KEY) === '1';
+      }
+
+      function syncAdminVisibility() {
+        document.body.classList.toggle('is-admin-auth', isAdminAuthed());
+      }
+
+      function isImageUrl(url) {
+        return /\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(url);
+      }
+
+      function renderThumb(cardEl, thumbUrl) {
+        var thumb = cardEl.querySelector('.canva-thumb');
+        var img = cardEl.querySelector('img');
+        var holder = cardEl.querySelector('.canva-thumb-placeholder');
+
+        if (thumbUrl) {
+          img.src = thumbUrl;
+          thumb.classList.add('has-image');
+          holder.style.display = 'none';
+        } else {
+          img.removeAttribute('src');
+          thumb.classList.remove('has-image');
+          holder.style.display = '';
+        }
+      }
+
+      function closePreview() {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        modalImage.style.display = 'none';
+        modalFrame.style.display = 'none';
+        modalImage.removeAttribute('src');
+        modalFrame.removeAttribute('src');
+        openLink.removeAttribute('href');
+      }
+
+      function openPreview(title, url, thumbUrl) {
+        var safeUrl = url || thumbUrl;
+        if (!safeUrl) {
+          window.alert('No link yet. Click Set upload link first.');
+          return;
+        }
+
+        modalTitle.textContent = title;
+        openLink.href = safeUrl;
+
+        if (isImageUrl(safeUrl)) {
+          modalImage.src = safeUrl;
+          modalImage.style.display = 'block';
+          modalFrame.style.display = 'none';
+        } else {
+          modalFrame.src = safeUrl;
+          modalFrame.style.display = 'block';
+          modalImage.style.display = 'none';
+        }
+
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+      }
+
+      function buildCards() {
+        var config = loadConfig();
+
+        for (var i = 1; i <= CARD_COUNT; i += 1) {
+          var key = String(i);
+          var saved = config[key] || {};
+          var title = saved.title || ('Design Card ' + i);
+          var previewUrl = saved.previewUrl || '';
+          var thumbUrl = saved.thumbUrl || '';
+
+          var card = document.createElement('article');
+          card.className = 'sample-card canva-card';
+          card.setAttribute('data-card-id', key);
+          card.innerHTML = '' +
+            '<div class="canva-thumb" role="button" tabindex="0" aria-label="Open preview">' +
+              '<img alt="Design thumbnail" loading="lazy" />' +
+              '<span class="canva-thumb-placeholder">Attach image link to show preview</span>' +
+              '<span class="canva-preview-btn" aria-hidden="true">Open Preview</span>' +
+            '</div>' +
+            '<div class="canva-actions">' +
+              '<button class="canva-link-btn" type="button">Set upload link</button>' +
+            '</div>';
+
+          grid.appendChild(card);
+          renderThumb(card, thumbUrl || (previewUrl && isImageUrl(previewUrl) ? previewUrl : ''));
+
+          (function (cardEl, cardId) {
+            var linkButton = cardEl.querySelector('.canva-link-btn');
+            var thumbButton = cardEl.querySelector('.canva-thumb');
+
+            function openCardPreview() {
+              var local = loadConfig()[cardId] || {};
+              openPreview(local.title || ('Design Card ' + cardId), local.previewUrl, local.thumbUrl);
+            }
+
+            thumbButton.addEventListener('click', openCardPreview);
+            thumbButton.addEventListener('keydown', function (event) {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                openCardPreview();
+              }
+            });
+
+            linkButton.addEventListener('click', function () {
+              if (!isAdminAuthed()) {
+                window.alert('Admin login required.');
+                return;
+              }
+
+              var local = loadConfig();
+              var current = local[cardId] || {};
+
+              var newTitle = window.prompt('Card title', current.title || ('Design Card ' + cardId));
+              if (newTitle === null) {
+                return;
+              }
+
+              var newPreviewUrl = window.prompt('Upload/preview link URL', current.previewUrl || '');
+              if (newPreviewUrl === null) {
+                return;
+              }
+
+              var newThumbUrl = window.prompt('Thumbnail image URL (optional)', current.thumbUrl || '');
+              if (newThumbUrl === null) {
+                return;
+              }
+
+              local[cardId] = {
+                title: newTitle.trim() || ('Design Card ' + cardId),
+                previewUrl: newPreviewUrl.trim(),
+                thumbUrl: newThumbUrl.trim()
+              };
+
+              saveConfig(local);
+
+              var fallbackThumb = local[cardId].thumbUrl || (isImageUrl(local[cardId].previewUrl) ? local[cardId].previewUrl : '');
+              renderThumb(cardEl, fallbackThumb);
+            });
+          })(card, key);
+        }
+      }
+
+      buildCards();
+      syncAdminVisibility();
+      document.addEventListener('jru-admin-auth-changed', syncAdminVisibility);
+
+      closeBtn.addEventListener('click', closePreview);
+      modal.addEventListener('click', function (event) {
+        if (event.target === modal) {
+          closePreview();
+        }
+      });
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && modal.classList.contains('open')) {
+          closePreview();
+        }
+      });
+    })();
+  </script>
+  <script src="./admin-editor.js"></script>
+</body>
+</html>

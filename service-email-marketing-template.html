@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email Marketing Template | Junnifer Ross Uy</title>
+  <meta name="description" content="Email Marketing Template service page." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./service-detail.css?v=1" />
+  <style>
+    .samples {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .sample-card {
+      min-height: 980px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .preview-card {
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .preview-card .sample-media {
+      margin-top: 0.5rem;
+      height: 860px;
+      background: #ececec;
+    }
+
+    .preview-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      pointer-events: none;
+    }
+
+    .card-hint {
+      margin-top: 0.6rem;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: #664722;
+    }
+
+    @media (max-width: 980px) {
+      .samples {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .samples {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="./admin-editor.css?v=1" />
+  <link rel="icon" type="image/png" href="https://res.cloudinary.com/dozcy2jve/image/upload/v1777065824/global-image-library/Portpolio_Imag_hf7ali.png" />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="container nav" aria-label="Service page navigation">
+      <a class="brand" href="./index.html">Junnifer Ross Uy</a>
+      <a class="back-link" href="./index.html#services">Back to Service Highlights</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="page-title" aria-labelledby="service-title">
+      <h1 id="service-title">Email Marketing Template</h1>
+      <p>Template design and layout setup for campaign-ready sending. Click any card to preview and open the full template.</p>
+    </section>
+
+    <section class="samples" aria-label="Next email template cards">
+      <a class="sample-card preview-card" href="./email-template-previews/announcement/announcement-email-template.html" target="_blank" rel="noopener noreferrer">
+        <h2>Announcement Invite</h2>
+        <p>Staff training welcome and invite campaign template.</p>
+        <div class="sample-media">
+          <iframe class="preview-frame" src="./email-template-previews/announcement/announcement-email-template.html" title="Announcement Invite preview" loading="lazy"></iframe>
+        </div>
+        <span class="card-hint">Click to preview</span>
+      </a>
+      <a class="sample-card preview-card" href="./email-template-previews/bakle-geluk/email-template-next-project-local-images-no-pixel.html" target="_blank" rel="noopener noreferrer">
+        <h2>Bakle Geluk</h2>
+        <p>Product-focused local-image email for next project flow.</p>
+        <div class="sample-media">
+          <iframe class="preview-frame" src="./email-template-previews/bakle-geluk/email-template-next-project-local-images-no-pixel.html" title="Bakle Geluk preview" loading="lazy"></iframe>
+        </div>
+        <span class="card-hint">Click to preview</span>
+      </a>
+      <a class="sample-card preview-card" href="./email-template-previews/go-grren/go-grren-email-template.html" target="_blank" rel="noopener noreferrer">
+        <h2>Go Grren</h2>
+        <p>Promo and booking CTA layout for Green GSM campaign.</p>
+        <div class="sample-media">
+          <iframe class="preview-frame" src="./email-template-previews/go-grren/go-grren-email-template.html" title="Go Grren preview" loading="lazy"></iframe>
+        </div>
+        <span class="card-hint">Click to preview</span>
+      </a>
+      <a class="sample-card preview-card" href="./email-template-previews/pxp/email-template.html" target="_blank" rel="noopener noreferrer">
+        <h2>PXP Template</h2>
+        <p>Powered by Prayer dynamic email version in local folder.</p>
+        <div class="sample-media">
+          <iframe class="preview-frame" src="./email-template-previews/pxp/email-template.html" title="PXP Template preview" loading="lazy"></iframe>
+        </div>
+        <span class="card-hint">Click to preview</span>
+      </a>
+    </section>
+  </main>
+
+  <footer class="service-footer">
+    <div class="container">
+      <p class="footer-name">Junnifer Uy portfolio</p>
+    </div>
+  </footer>
+  <script src="./admin-editor.js"></script>
+</body>
+</html>
