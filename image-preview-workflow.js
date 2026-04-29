@@ -33,7 +33,9 @@
       cardOpen +
         '<div class="sample-media">' +
           '<img src="' + safeUrl + '" alt="' + alt + '" loading="lazy" />' +
-          '<button class="sample-preview-btn" type="button" data-preview-src="' + safeUrl + '">Open Preview</button>' +
+          (hasCardLink
+            ? '<span class="sample-preview-btn">Open App</span>'
+            : '<button class="sample-preview-btn" type="button" data-preview-src="' + safeUrl + '">Open Preview</button>') +
         '</div>' +
       cardClose
     );
