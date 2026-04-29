@@ -17,16 +17,25 @@
     })
     .slice(0, maxCards);
 
+  var previewLinks = Array.isArray(window.pagePreviewLinks) ? window.pagePreviewLinks : [];
+
   var cardsHtml = imageUrls.map(function (url, index) {
     var safeUrl = escapeAttr(url);
     var alt = 'Preview image ' + (index + 1);
+    var cardLink = typeof previewLinks[index] === 'string' ? previewLinks[index].trim() : '';
+    var hasCardLink = cardLink.length > 0;
+    var safeCardLink = hasCardLink ? escapeAttr(cardLink) : '';
+    var cardOpen = hasCardLink
+      ? '<a class="sample-card sample-card-clickable" href="' + safeCardLink + '" target="_blank" rel="noopener noreferrer">'
+      : '<article class="sample-card">';
+    var cardClose = hasCardLink ? '</a>' : '</article>';
     return (
-      '<article class="sample-card">' +
+      cardOpen +
         '<div class="sample-media">' +
           '<img src="' + safeUrl + '" alt="' + alt + '" loading="lazy" />' +
           '<button class="sample-preview-btn" type="button" data-preview-src="' + safeUrl + '">Open Preview</button>' +
         '</div>' +
-      '</article>'
+      cardClose
     );
   }).join('');
 
