@@ -37,7 +37,8 @@
     .canva-thumb img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
+      background: #ffffff;
       display: none;
     }
 
@@ -59,6 +60,13 @@
       gap: 0.42rem;
       align-items: center;
       flex-wrap: wrap;
+    }
+
+    .canva-meta {
+      margin-top: 0.42rem;
+      font-size: 0.7rem;
+      color: #5b5b5b;
+      line-height: 1.3;
     }
 
     .canva-link-btn,
@@ -163,12 +171,16 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: auto;
+      padding: 0.6rem;
     }
 
     .preview-image,
     .preview-iframe {
-      width: 100%;
-      height: 100%;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
       border: 0;
       display: none;
     }
@@ -233,9 +245,40 @@
 
   <script>
     (function () {
-      var CARD_COUNT = 20;
-      var STORAGE_KEY = 'canva_card_links_v1';
+      var STORAGE_KEY = 'canva_card_links_v2';
       var ADMIN_AUTH_KEY = 'jru_admin_authenticated';
+      var DEFAULT_IMAGES = [
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264350/images/3_cs7nlr.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264340/images/ounde_copy_zrh9wx.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264332/images/2_z9p5t1.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264305/images/funnelfy-canva-7_xcq6u1.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264303/images/funnelfy-canva-9_ligwpc.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264296/images/funnelfy-canva-16_xycwkg.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264292/images/funnelfy-canva-17_geqjs7.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264290/images/funnelfy-canva-18_ltpcd4.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264286/images/funnelfy-canva-19_gwqybt.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264279/images/funnelfy-canva-22_ujbl6t.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264275/images/funnelfy-canva-23_pwf5oq.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264271/images/funnelfy-canva-24_kbnfbw.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264266/images/funnelfy-canva-25_osivmn.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264263/images/funnelfy-canva-26_hmrro1.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264259/images/funnelfy-canva-27_uqkdc4.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264256/images/funnelfy-canva-28_ugvxmr.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264253/images/funnelfy-canva-29_ae7dov.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264250/images/funnelfy-canva-30_pycpcd.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264246/images/funnelfy-canva-31_ejga39.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264243/images/funnelfy-canva-32_mcrwdu.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264239/images/funnelfy-canva-33_mztn7t.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264221/images/_pxp_live_tuesday_Youtube_Thumbnail_1_ygmciy.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264176/images/3_1_va5yfa.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264161/images/2025_Ebook_Mockup_-_Tshirt_Instagram_Post_rtpqyv.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264128/images/day_1_4_nb5rpg.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264109/images/funnelfy-canva-35_r2idgz.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264099/images/_pxp_live_tuesday_Youtube_Thumbnail_11_lyemtl.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264073/images/Black_Brown_Grunge_Youth_Explosion_Event_Instagram_Post_e5i0xe.png",
+        "https://res.cloudinary.com/dozcy2jve/image/upload/v1778264059/images/Dakota_3_pphphx.png"
+      ];
+      var CARD_COUNT = DEFAULT_IMAGES.length;
 
       var grid = document.getElementById('canva-grid');
       var modal = document.getElementById('preview-modal');
@@ -244,6 +287,7 @@
       var modalTitle = document.getElementById('preview-modal-title');
       var modalImage = document.getElementById('preview-image');
       var modalFrame = document.getElementById('preview-iframe');
+      var sortTimer = null;
 
       function loadConfig() {
         try {
@@ -274,13 +318,58 @@
         var thumb = cardEl.querySelector('.canva-thumb');
         var img = cardEl.querySelector('img');
         var holder = cardEl.querySelector('.canva-thumb-placeholder');
+        var meta = cardEl.querySelector('.canva-meta');
+
+        function queueSort() {
+          if (sortTimer) {
+            clearTimeout(sortTimer);
+          }
+          sortTimer = setTimeout(function () {
+            var cards = Array.prototype.slice.call(grid.querySelectorAll('.canva-card'));
+            cards.sort(function (a, b) {
+              var ar = Number(a.dataset.ratio || 1);
+              var br = Number(b.dataset.ratio || 1);
+              if (ar !== br) {
+                return ar - br;
+              }
+              var aa = Number(a.dataset.area || 0);
+              var ba = Number(b.dataset.area || 0);
+              return ba - aa;
+            });
+            cards.forEach(function (card) {
+              grid.appendChild(card);
+            });
+          }, 80);
+        }
 
         if (thumbUrl) {
+          img.onload = function () {
+            if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+              var w = img.naturalWidth;
+              var h = img.naturalHeight;
+              var ratio = w / h;
+              thumb.style.aspectRatio = w + ' / ' + h;
+              cardEl.dataset.ratio = String(ratio);
+              cardEl.dataset.area = String(w * h);
+              meta.textContent = w + 'x' + h + ' • ' + ratio.toFixed(2) + ':1';
+              queueSort();
+            }
+          };
+          img.onerror = function () {
+            thumb.style.aspectRatio = '1 / 1';
+            cardEl.dataset.ratio = '1';
+            cardEl.dataset.area = '0';
+            meta.textContent = 'Size unavailable';
+          };
           img.src = thumbUrl;
           thumb.classList.add('has-image');
           holder.style.display = 'none';
         } else {
           img.removeAttribute('src');
+          thumb.style.aspectRatio = '1 / 1';
+          cardEl.dataset.ratio = '1';
+          cardEl.dataset.area = '0';
+          meta.textContent = 'No image';
           thumb.classList.remove('has-image');
           holder.style.display = '';
         }
@@ -326,9 +415,10 @@
         for (var i = 1; i <= CARD_COUNT; i += 1) {
           var key = String(i);
           var saved = config[key] || {};
+          var defaultUrl = DEFAULT_IMAGES[i - 1] || '';
           var title = saved.title || ('Design Card ' + i);
-          var previewUrl = saved.previewUrl || '';
-          var thumbUrl = saved.thumbUrl || '';
+          var previewUrl = saved.previewUrl || defaultUrl;
+          var thumbUrl = saved.thumbUrl || defaultUrl;
 
           var card = document.createElement('article');
           card.className = 'sample-card canva-card';
@@ -339,6 +429,7 @@
               '<span class="canva-thumb-placeholder">Attach image link to show preview</span>' +
               '<span class="canva-preview-btn" aria-hidden="true">Open Preview</span>' +
             '</div>' +
+            '<div class="canva-meta">Loading size...</div>' +
             '<div class="canva-actions">' +
               '<button class="canva-link-btn" type="button">Set upload link</button>' +
             '</div>';
@@ -352,7 +443,12 @@
 
             function openCardPreview() {
               var local = loadConfig()[cardId] || {};
-              openPreview(local.title || ('Design Card ' + cardId), local.previewUrl, local.thumbUrl);
+              var defaultUrl = DEFAULT_IMAGES[Number(cardId) - 1] || '';
+              openPreview(
+                local.title || ('Design Card ' + cardId),
+                local.previewUrl || defaultUrl,
+                local.thumbUrl || defaultUrl
+              );
             }
 
             thumbButton.addEventListener('click', openCardPreview);
