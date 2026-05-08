@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="./admin-editor.css?v=1" />
   <style>
     .samples {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
     @media (max-width: 980px) {
@@ -25,6 +25,14 @@
       .samples {
         grid-template-columns: 1fr;
       }
+    }
+
+    .sample-media {
+      aspect-ratio: 9 / 16;
+    }
+
+    .sample-card--wide .sample-media {
+      aspect-ratio: 16 / 9;
     }
   </style>
   <link rel="icon" type="image/png" href="https://res.cloudinary.com/dozcy2jve/image/upload/v1777065824/global-image-library/Portpolio_Imag_hf7ali.png" />
@@ -83,7 +91,7 @@
           <iframe src="https://www.tiktok.com/embed/v2/7624167818749168916" title="TikTok video preview 5" loading="lazy" allowfullscreen></iframe>
         </div>
       </article>
-      <article class="sample-card">
+      <article class="sample-card sample-card--wide">
         <div class="sample-media">
           <iframe src="https://www.youtube.com/embed/9yzGoHqyUlE?si=BnUriGrrCA7qRf51" title="YouTube video player" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
         </div>
