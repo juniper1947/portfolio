@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/junnifer-main.html"
+    }
+  ]
+}

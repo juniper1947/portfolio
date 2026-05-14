@@ -10,6 +10,26 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./service-detail.css?v=1" />
   <style>
+    body {
+      position: relative;
+      isolation: isolate;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0.86) 100%),
+        url("https://res.cloudinary.com/dozcy2jve/image/upload/v1778744084/images/Screenshot_2026-05-14_at_3.34.36_PM_h1waey.png");
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      opacity: 0.34;
+      z-index: -1;
+      pointer-events: none;
+    }
+
     .samples {
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
