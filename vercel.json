@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/junnifer-main.html"
+      "destination": "/index.html"
     }
   ]
 }
