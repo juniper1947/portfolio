@@ -4,3 +4,4 @@
 # Editor/system
 .vscode/
 Thumbs.db
+.vercel

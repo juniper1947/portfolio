@@ -12,6 +12,10 @@
   <link rel="stylesheet" href="./admin-editor.css?v=1" />
   <link rel="icon" type="image/png" href="https://res.cloudinary.com/dozcy2jve/image/upload/v1777065824/global-image-library/Portpolio_Imag_hf7ali.png" />
   <style>
+    .samples {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
     .sample-media {
       position: relative;
     }
@@ -43,6 +47,18 @@
 
     .sample-media iframe {
       pointer-events: none;
+    }
+
+    @media (max-width: 980px) {
+      .samples {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .samples {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -114,6 +130,34 @@
         <h2>Powered X Prayers Checkout</h2>
         <div class="sample-media">
           <img src="https://s.wordpress.com/mshots/v1/https://go.poweredxprayers.com/checkout-forms-cheero-471753?w=1200" alt="Powered X Prayers Checkout preview" loading="lazy" />
+          <span class="sample-preview-btn">Open Preview</span>
+        </div>
+      </a>
+      <a class="sample-card sample-card-clickable" href="https://app.coursecreator360.com/v2/preview/YePy9yWGRPNI7DFsOkgA?notrack=true" target="_blank" rel="noopener noreferrer" aria-label="Open CourseCreator360 Preview">
+        <h2>CourseCreator360 Preview</h2>
+        <div class="sample-media">
+          <img src="https://s.wordpress.com/mshots/v1/https://app.coursecreator360.com/v2/preview/YePy9yWGRPNI7DFsOkgA?notrack=true&w=1200" alt="CourseCreator360 preview" loading="lazy" />
+          <span class="sample-preview-btn">Open Preview</span>
+        </div>
+      </a>
+      <a class="sample-card sample-card-clickable" href="https://junniferportfolio.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="Open Junnifer Portfolio Live">
+        <h2>Junnifer Portfolio Live</h2>
+        <div class="sample-media">
+          <img src="https://s.wordpress.com/mshots/v1/https://junniferportfolio.vercel.app/?w=1200" alt="Junnifer Portfolio Live preview" loading="lazy" />
+          <span class="sample-preview-btn">Open Preview</span>
+        </div>
+      </a>
+      <a class="sample-card sample-card-clickable" href="https://go.eliteschildren.org/merch?variant=69aefe664648534892fdccb9&ep_no=1&sortField=id&sortOrder=desc" target="_blank" rel="noopener noreferrer" aria-label="Open Elite's Children Merch">
+        <h2>Elite's Children Merch</h2>
+        <div class="sample-media">
+          <img src="https://s.wordpress.com/mshots/v1/https://go.eliteschildren.org/merch?variant=69aefe664648534892fdccb9&ep_no=1&sortField=id&sortOrder=desc&w=1200" alt="Elite's Children Merch preview" loading="lazy" />
+          <span class="sample-preview-btn">Open Preview</span>
+        </div>
+      </a>
+      <a class="sample-card sample-card-clickable" href="https://login.eliteschildren.org/communities/groups/training-hub/home" target="_blank" rel="noopener noreferrer" aria-label="Open Elite's Children Training Hub">
+        <h2>Elite's Children Training Hub</h2>
+        <div class="sample-media">
+          <img src="https://s.wordpress.com/mshots/v1/https://login.eliteschildren.org/communities/groups/training-hub/home?w=1200" alt="Elite's Children Training Hub preview" loading="lazy" />
           <span class="sample-preview-btn">Open Preview</span>
         </div>
       </a>
