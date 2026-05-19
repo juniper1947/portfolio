@@ -11,6 +11,49 @@
   <link rel="stylesheet" href="./service-detail.css?v=1" />
   <link rel="stylesheet" href="./admin-editor.css?v=1" />
   <link rel="stylesheet" href="./image-preview-workflow.css?v=1" />
+  <style>
+    :root {
+      --ghl-parallax-bg: url("https://res.cloudinary.com/dozcy2jve/image/upload/v1778742867/images/GHL_Auto2_tx1hd2.png");
+    }
+
+    body {
+      position: relative;
+      isolation: isolate;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0.86) 100%),
+        var(--ghl-parallax-bg);
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      opacity: 0.3;
+      z-index: -1;
+      pointer-events: none;
+      transform: var(--ghl-parallax-transform, translate3d(0, 0, 0) scale(1.08));
+      will-change: transform;
+    }
+
+    .samples[data-gallery="image-preview"] {
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+
+    @media (max-width: 980px) {
+      .samples[data-gallery="image-preview"] {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .samples[data-gallery="image-preview"] {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
   <link rel="icon" type="image/png" href="https://res.cloudinary.com/dozcy2jve/image/upload/v1777065824/global-image-library/Portpolio_Imag_hf7ali.png" />
 </head>
 <body>
@@ -43,9 +86,40 @@
     </div>
   </footer>
   <script>
-    window.pagePreviewImages = [];
+    window.pagePreviewMaxCards = 9;
+    window.pagePreviewImages = [
+      "https://res.cloudinary.com/dozcy2jve/image/upload/v1779222310/images/Screenshot_2026-05-20_at_4.24.43_AM_gggjtp.png",
+      "https://res.cloudinary.com/dozcy2jve/image/upload/v1779222332/images/Screenshot_2026-05-20_at_4.25.24_AM_gjbnrm.png",
+      "https://res.cloudinary.com/dozcy2jve/image/upload/v1778742878/images/GHL_Auto6_uqcl85.png",
+      "https://res.cloudinary.com/dozcy2jve/image/upload/v1778742876/images/GHL_Auto5_wfysfp.png",
+      "https://res.cloudinary.com/dozcy2jve/image/upload/v1778742873/images/GHL_Auto4_vitoxq.png",
+      "https://res.cloudinary.com/dozcy2jve/image/upload/v1778742870/images/GHL_Auto3_k8in2u.png",
+      "https://res.cloudinary.com/dozcy2jve/image/upload/v1778742867/images/GHL_Auto2_tx1hd2.png",
+      "https://res.cloudinary.com/dozcy2jve/image/upload/v1778742864/images/GHL_Auto1_fjeg1l.png",
+      "https://res.cloudinary.com/dozcy2jve/image/upload/v1778742890/images/GHL_Auto9_vpkbwk.png"
+    ];
   </script>
   <script src="./image-preview-workflow.js"></script>
+  <script>
+    (function () {
+      var ticking = false;
+      function updateParallax() {
+        var y = window.scrollY * 0.16;
+        document.body.style.setProperty(
+          "--ghl-parallax-transform",
+          "translate3d(0, " + y.toFixed(2) + "px, 0) scale(1.08)"
+        );
+        ticking = false;
+      }
+      window.addEventListener("scroll", function () {
+        if (!ticking) {
+          window.requestAnimationFrame(updateParallax);
+          ticking = true;
+        }
+      }, { passive: true });
+      updateParallax();
+    })();
+  </script>
   <script src="./admin-editor.js"></script>
 </body>
 </html>
