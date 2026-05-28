@@ -17,9 +17,100 @@
     .samples[data-gallery="image-preview"] {
       grid-template-columns: 1fr;
     }
+
+    .sample-card[data-preview-src] {
+      cursor: pointer;
+    }
+
+    .sample-media iframe {
+      width: 100%;
+      min-height: 420px;
+      border: 0;
+      pointer-events: none;
+    }
+
+    .app-preview-lightbox {
+      width: min(1200px, 96vw);
+      border: 0;
+      border-radius: 16px;
+      padding: 0;
+      background: #06142f;
+    }
+
+    .app-preview-lightbox::backdrop {
+      background: rgba(3, 10, 24, 0.78);
+    }
+
+    .app-preview-shell {
+      position: relative;
+      height: min(82vh, 900px);
+      padding-top: 40px;
+    }
+
+    .app-preview-shell iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      border-radius: 0 0 16px 16px;
+      background: #fff;
+    }
+
+    .app-preview-toolbar {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .app-preview-open-link,
+    .app-preview-close {
+      border: 0;
+      border-radius: 8px;
+      background: #1f56d8;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .app-preview-open-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 32px;
+      padding: 0 12px;
+      font: 600 13px/1 Manrope, sans-serif;
+      text-decoration: none;
+    }
+
+    .app-preview-close {
+      font-size: 24px;
+      line-height: 1;
+      width: 32px;
+      height: 32px;
+    }
   </style>
 </head>
 <body>
+  <!-- Meta Pixel Code -->
+  <script nonce="portfolio2026">
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1317530306473528');
+  fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=1317530306473528&ev=PageView&noscript=1"
+  /></noscript>
+  <!-- End Meta Pixel Code -->
+
+
   <header class="site-header">
     <nav class="container nav" aria-label="Service page navigation">
       <a class="brand" href="./index.html">Junnifer Ross Uy</a>
@@ -34,25 +125,75 @@
     </section>
 
     <section class="samples one-col" aria-label="Featured app card">
-      <article class="sample-card" aria-label="Invoice Buyer App preview">
+      <article class="sample-card" aria-label="Invoice Buyer App preview" data-preview-src="https://juniper1947.github.io/invoice-buyer/">
         <div class="sample-media">
           <iframe src="https://juniper1947.github.io/invoice-buyer/" title="Invoice Buyer App" loading="lazy" allowfullscreen></iframe>
         </div>
       </article>
-      <article class="sample-card" aria-label="Flipbook App preview">
+      <article class="sample-card" aria-label="Flipbook App preview" data-preview-src="https://elite-pxp.github.io/flipbook/">
         <div class="sample-media">
           <iframe src="https://elite-pxp.github.io/flipbook/" title="Flipbook App" loading="lazy" allowfullscreen></iframe>
         </div>
       </article>
     </section>
-
   </main>
+
+  <dialog class="app-preview-lightbox" id="app-preview-lightbox" aria-label="App preview">
+    <div class="app-preview-shell">
+      <div class="app-preview-toolbar">
+        <a class="app-preview-open-link" id="app-preview-open-link" href="#" target="_blank" rel="noopener noreferrer">Open in New Tab</a>
+        <button class="app-preview-close" id="app-preview-close" type="button" aria-label="Close preview">×</button>
+      </div>
+      <iframe id="app-preview-frame" src="about:blank" title="App preview"></iframe>
+    </div>
+  </dialog>
 
   <footer class="service-footer">
     <div class="container">
       <p class="footer-name">Junnifer Uy portfolio</p>
     </div>
   </footer>
+
+  <script>
+    (function () {
+      var cards = document.querySelectorAll('.sample-card[data-preview-src]');
+      var dialog = document.getElementById('app-preview-lightbox');
+      var frame = document.getElementById('app-preview-frame');
+      var closeBtn = document.getElementById('app-preview-close');
+      var openLink = document.getElementById('app-preview-open-link');
+
+      if (!cards.length || !dialog || !frame || !closeBtn || !openLink) {
+        return;
+      }
+
+      cards.forEach(function (card) {
+        card.addEventListener('click', function () {
+          var src = card.getAttribute('data-preview-src');
+          if (!src) {
+            return;
+          }
+          frame.setAttribute('src', src);
+          openLink.setAttribute('href', src);
+          dialog.showModal();
+        });
+      });
+
+      closeBtn.addEventListener('click', function () {
+        dialog.close();
+      });
+
+      dialog.addEventListener('click', function (event) {
+        if (event.target === dialog) {
+          dialog.close();
+        }
+      });
+
+      dialog.addEventListener('close', function () {
+        frame.setAttribute('src', 'about:blank');
+        openLink.setAttribute('href', '#');
+      });
+    })();
+  </script>
   <script src="./admin-editor.js"></script>
 </body>
 </html>
