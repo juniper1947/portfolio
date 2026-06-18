@@ -139,6 +139,39 @@ main {
   aspect-ratio: 16 / 9;
 }
 
+.sample-placeholder {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background:
+    radial-gradient(circle at top, rgba(210, 180, 140, 0.22), transparent 60%),
+    linear-gradient(135deg, #f7f2eb 0%, #ece6dc 100%);
+  color: #4f4f4f;
+  text-align: center;
+}
+
+.sample-placeholder-copy {
+  max-width: 24ch;
+}
+
+.sample-placeholder-kicker {
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(167, 119, 69, 0.12);
+  color: #8a5d2e;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sample-placeholder-copy p {
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
 .sample-media img,
 .sample-media iframe {
   width: 100%;

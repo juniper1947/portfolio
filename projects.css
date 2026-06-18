@@ -158,6 +158,47 @@ h2 {
   border: 1px solid #2c3a50;
   border-radius: 12px;
   padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.card-media {
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #2f3d54;
+  background:
+    radial-gradient(circle at top, rgba(138, 182, 255, 0.18), transparent 55%),
+    linear-gradient(135deg, #19202c 0%, #11161f 100%);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 0.9rem;
+}
+
+.card-placeholder {
+  color: #c8d1df;
+}
+
+.card-placeholder span {
+  display: inline-block;
+  padding: 0.22rem 0.55rem;
+  margin-bottom: 0.35rem;
+  border-radius: 999px;
+  background: rgba(210, 180, 140, 0.12);
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.card-placeholder p {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: #d5deea;
 }
 
 .card h3 {
